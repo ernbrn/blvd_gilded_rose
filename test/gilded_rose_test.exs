@@ -6,6 +6,7 @@ defmodule GildedRoseTest do
   @aged_brie "Aged Brie"
   @sulfuras "Sulfuras, Hand of Ragnaros"
   @backstage_pass "Backstage passes to a TAFKAL80ETC concert"
+  @conjured "Conjured"
 
   describe "update_quality/1" do
     test "interface specification" do
@@ -206,6 +207,35 @@ defmodule GildedRoseTest do
       GildedRose.update_quality(store)
 
       assert [%GildedRose.Item{name: @backstage_pass, sell_in: -1, quality: 0}] =
+               GildedRose.items(store)
+
+      Agent.stop(store)
+    end
+  end
+
+  describe "update_quality/1 when item is Conjured" do
+    test "quality degrades twice as fast" do
+      store =
+        start_test_agent([
+          %GildedRose.Item{name: @conjured, sell_in: 10, quality: 10}
+        ])
+
+      GildedRose.update_quality(store)
+
+      assert [%GildedRose.Item{name: @conjured, sell_in: 9, quality: 8}] = GildedRose.items(store)
+
+      Agent.stop(store)
+    end
+
+    test "quality never drops below 0" do
+      store =
+        start_test_agent([
+          %GildedRose.Item{name: @conjured, sell_in: -1, quality: 0}
+        ])
+
+      GildedRose.update_quality(store)
+
+      assert [%GildedRose.Item{name: @conjured, sell_in: -2, quality: 0}] =
                GildedRose.items(store)
 
       Agent.stop(store)

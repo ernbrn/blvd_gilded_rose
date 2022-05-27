@@ -41,5 +41,6 @@ defmodule GildedRose do
   defp update_for("Aged Brie"), do: Item.AgedBrie
   defp update_for("Backstage passes " <> _), do: Item.BackstagePasses
   defp update_for("Sulfuras, Hand of Ragnaros"), do: Item.Sulfuras
+  defp update_for("Conjured"), do: Item.Conjured
   defp update_for(_), do: Item.StandardItem
 end
