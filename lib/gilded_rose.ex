@@ -2,6 +2,8 @@ defmodule GildedRose do
   use Agent
   alias GildedRose.Item
 
+  @callback update_item(%GildedRose.Item{}) :: %GildedRose.Item{}
+
   def new() do
     {:ok, agent} =
       Agent.start_link(fn ->
@@ -16,6 +18,10 @@ defmodule GildedRose do
       end)
 
     agent
+  end
+
+  def update_item!({item, index}) do
+    {update_for(item.name).update_item(item), index}
   end
 
   def items(agent), do: Agent.get(agent, & &1)
@@ -135,4 +141,9 @@ defmodule GildedRose do
 
     :ok
   end
+
+  defp update_for("Aged Brie"), do: Item.AgedBrie
+  defp update_for("Backstage passes " <> _), do: Item.BackstagePasses
+  defp update_for("Sulfuras, Hand of Ragnaros"), do: Item.Sulfuras
+  defp update_for(_), do: Item.StandardItem
 end
